@@ -1,5 +1,6 @@
 import {
   Box,
+  Card,
   Container,
   Grid,
   IconButton,
@@ -17,7 +18,7 @@ import LightModeIcon from "@mui/icons-material/LightMode"
 import { bindActionCreators } from '@reduxjs/toolkit'
 import { useRef } from 'react'
 import TodoListsView from './features/TodoLists/TodoListsView'
-import { CompactCardContent, PaperCard } from './features/TodoLists/components/PaperCard'
+import CompactCardContent from './features/TodoLists/components/CompactCardContent'
 import themingSlice from './state/themingSlice'
 import { AppDispatch, RootState } from './store'
 
@@ -73,7 +74,7 @@ const App = themingConnector((props: ConnectedProps<typeof themingConnector>) =>
             height: '100vh',
             padding: '1rem',
           }}>
-            <PaperCard>
+            <Card>
               <CompactCardContent
                 cardContentProps={{
                   sx: {
@@ -82,7 +83,7 @@ const App = themingConnector((props: ConnectedProps<typeof themingConnector>) =>
                   },
                 }}>
                 <Grid item xs>
-                  <Typography variant='h5'>TODOs...</Typography>
+                  <Typography variant='h5' fontWeight={800} paddingLeft={2}>TODOs...</Typography>
                 </Grid>
                 <Grid item xs='auto'>
                   <IconButton onClick={() => {
@@ -104,7 +105,7 @@ const App = themingConnector((props: ConnectedProps<typeof themingConnector>) =>
                   </IconButton>
                 </Grid>
               </CompactCardContent>
-            </PaperCard>
+            </Card>
             <TodoListsView />
           </Stack>
         </Container>

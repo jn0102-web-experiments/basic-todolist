@@ -1,11 +1,10 @@
 import AddIcon from "@mui/icons-material/Add"
-import { CardContent, Grid, IconButton, List, ListItemButton, ListItemText, ListSubheader, Paper } from "@mui/material"
+import { Card, CardContent, Grid, IconButton, List, ListItemButton, ListItemText, ListSubheader } from "@mui/material"
 import { bindActionCreators } from "@reduxjs/toolkit"
 import { useEffect, useRef, useState } from "react"
 import { ConnectedProps, connect } from "react-redux"
 import { AppDispatch, RootState } from "../../store"
 import TodoListView from "./TodoListView"
-import { PaperCard } from "./components/PaperCard"
 import todoListsSlice from "./state/todoListsSlice"
 
 const todoListsConnector = connect(
@@ -38,8 +37,14 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
 
     return (
         <Grid container gap={2} height='100%' overflow='hidden'>
-            <Grid item height='100%' overflow='auto' component={Paper} xs={2} md={3}>
-                <List>
+            <Grid item height='98%' overflow='auto' component={Card} xs={2} md={3}>
+                <List
+                    sx={{
+                        '& ul': {
+                            padding: 0,
+                        },
+                    }}
+                    subheader={<li />}>
                     <Grid container component={ListSubheader}>
                         <Grid item xs>TODO Lists</Grid>
                         <Grid item xs='auto'>
@@ -53,9 +58,11 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
                     </Grid>
                     {
                         props.todoLists.map((todoList, idx) => (
-                            <ListItemButton key={idx} selected={idx === selectedTodoListIndex} onClick={() => setSelectedTodoListIndex(idx)}>
-                                <ListItemText primary={todoList.name} />
-                            </ListItemButton>
+                            <li key={idx}>
+                                <ListItemButton selected={idx === selectedTodoListIndex} onClick={() => setSelectedTodoListIndex(idx)}>
+                                    <ListItemText primary={todoList.name} />
+                                </ListItemButton>
+                            </li>
                         ))
                     }
                 </List>
@@ -69,9 +76,9 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
                                 todoList={selectedTodoList}
                             />
                         ) : (
-                            <PaperCard>
+                            <Card>
                                 <CardContent>NO TODO LIST SELECTED</CardContent>
-                            </PaperCard>
+                            </Card>
                         )
                 }
             </Grid>

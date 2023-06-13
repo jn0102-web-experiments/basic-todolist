@@ -5,6 +5,7 @@ import InfoIcon from "@mui/icons-material/Info"
 import {
     Box,
     Button,
+    Card,
     Checkbox,
     Dialog,
     DialogActions,
@@ -24,7 +25,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { ConnectedProps, connect } from "react-redux"
 import { AppDispatch } from "../../store"
 import MdView from "../components/MdView"
-import { CompactCardContent, PaperCard } from "./components/PaperCard"
+import CompactCardContent from "./components/CompactCardContent"
 import { CancelledPromptResult, PromptResultStatus, ResolvedPromptResult, usePrompt } from "./components/hooks/prompt"
 import todoListsSlice, { ParentTodoInfo, TodoInfo, TodoList } from "./state/todoListsSlice"
 
@@ -52,15 +53,20 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
             <TodoItemDetailView controlRef={todoDetailedViewControlRef} />
             <Grid container gap={2} position='relative' height='100%' overflow='auto'>
                 <Grid item xs={8} position='sticky'>
-                    <List sx={{
-                        display: 'block',
-                        width: '100%',
-                        gap: 2,
-                    }}>
+                    <List
+                        sx={{
+                            display: 'block',
+                            width: '100%',
+                            gap: 2,
+                            '& ul': {
+                                padding: 0,
+                            },
+                        }}
+                        subheader={<li />}>
                         <ListSubheader sx={{
                             width: '100%',
                         }}>
-                            <PaperCard>
+                            <Card>
                                 <CompactCardContent cardContentProps={{ sx: { d: 'flex' } }}>
                                     <Grid container alignItems='center'>
                                         <Grid item xs component='h3' paddingLeft='0.5rem'>
@@ -80,7 +86,7 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                         </Grid>
                                     </Grid>
                                 </CompactCardContent>
-                            </PaperCard>
+                            </Card>
                         </ListSubheader>
                         {props.todoList.todos.map(
                             (todoInfo, idx) => (
@@ -143,7 +149,7 @@ function TodoItemView({
     stateRef.current = stateObj
 
     return (
-        <PaperCard>
+        <Card>
             <CompactCardContent>
                 <Grid container flexWrap='nowrap'>
                     <Grid item xs flexShrink={1}>
@@ -185,7 +191,7 @@ function TodoItemView({
                     </Grid>
                 </Grid>
             </CompactCardContent>
-        </PaperCard>
+        </Card>
     )
 }
 
@@ -193,7 +199,11 @@ interface TodoItemDetailViewDialogControl {
     prompt(todoInfo: TodoInfo): Promise<ResolvedPromptResult<void> | CancelledPromptResult>
 }
 
-function TodoItemDetailView({ controlRef }: { controlRef: React.MutableRefObject<TodoItemDetailViewDialogControl | null> }) {
+interface TodoItemDetailViewProps {
+    controlRef: React.MutableRefObject<TodoItemDetailViewDialogControl | null>
+}
+
+function TodoItemDetailView({ controlRef }: TodoItemDetailViewProps) {
 
     const [todoTitle, setTodoTitle] = useState('')
     const [todoDescription, setTodoDescription] = useState<string | undefined>('')
@@ -245,7 +255,11 @@ interface TodoFormDialogControl {
     prompt(todoInfo: TodoInfo): Promise<ResolvedPromptResult<TodoInfo> | CancelledPromptResult>
 }
 
-function TodoFormDialog({ controlRef }: { controlRef: React.MutableRefObject<TodoFormDialogControl | null> }) {
+interface TodoFormDialogProps {
+    controlRef: React.MutableRefObject<TodoFormDialogControl | null>
+}
+
+function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
 
     const [todoTitle, setTodoTitle] = useState('')
     const [todoDescription, setTodoDescription] = useState<string | undefined>('')
