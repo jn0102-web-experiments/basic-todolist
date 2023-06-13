@@ -36,8 +36,15 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
     }, [props.todoLists.length])
 
     return (
-        <Grid container gap={2} height='100%' overflow='hidden'>
-            <Grid item height='98%' overflow='auto' component={Card} xs={2} md={3}>
+        <Grid
+            container
+            gap={2}
+            overflow={{
+                overflowY: 'hidden',
+            }}
+            height='100%'
+            paddingBottom={1}>
+            <Grid item component={Card} xs={2} md={3} overflow='auto' height='100%'>
                 <List
                     sx={{
                         '& ul': {

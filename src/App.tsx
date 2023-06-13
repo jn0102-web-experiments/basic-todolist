@@ -63,16 +63,17 @@ const App = themingConnector((props: ConnectedProps<typeof themingConnector>) =>
           m: 0,
           width: '100%',
           height: '100vh',
-          overflowY: 'scroll',
         }}>
         <Container sx={{
           height: '100vh',
         }}>
           <Stack gap={2} justifyContent='start' sx={{
-            height: '100vh',
+            height: '100%',
             padding: '1rem',
           }}>
-            <Card>
+            <Card sx={{
+              flexShrink: 0,
+            }}>
               <CompactCardContent
                 cardContentProps={{
                   sx: {
