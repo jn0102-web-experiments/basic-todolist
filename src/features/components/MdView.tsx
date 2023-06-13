@@ -17,7 +17,6 @@ interface MdViewProps extends ConnectedProps<typeof themingConnector> {
 }
 
 const MdView = themingConnector(({ children, theme }: MdViewProps) => {
-    console.log('@MD@THEME:', theme)
     return <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw]}

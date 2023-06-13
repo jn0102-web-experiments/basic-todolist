@@ -47,8 +47,6 @@ const themingConnector = connect(
 )
 
 const App = themingConnector((props: ConnectedProps<typeof themingConnector>) => {
-  console.log("@theme:", props.theme, themeMap.get(props.theme));
-
   const activeTheme = themeMap.get(props.theme) ?? darkTheme;
 
   const stateObj = {
