@@ -1,5 +1,5 @@
 import AddIcon from "@mui/icons-material/Add"
-import { Card, CardContent, Grid, IconButton, List, ListItemButton, ListItemText, ListSubheader } from "@mui/material"
+import { Card, CardContent, Grid, IconButton, List, ListItem, ListItemButton, ListItemText, ListSubheader } from "@mui/material"
 import { bindActionCreators } from "@reduxjs/toolkit"
 import { useEffect, useRef, useState } from "react"
 import { ConnectedProps, connect } from "react-redux"
@@ -46,11 +46,7 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
             paddingBottom={1}>
             <Grid item component={Card} xs={2} md={3} overflow='auto' height='100%'>
                 <List
-                    sx={{
-                        '& ul': {
-                            padding: 0,
-                        },
-                    }}
+                    disablePadding
                     subheader={<li />}>
                     <Grid container component={ListSubheader}>
                         <Grid item xs>TODO Lists</Grid>
@@ -65,11 +61,11 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
                     </Grid>
                     {
                         props.todoLists.map((todoList, idx) => (
-                            <li key={idx}>
+                            <ListItem key={idx} disablePadding>
                                 <ListItemButton selected={idx === selectedTodoListIndex} onClick={() => setSelectedTodoListIndex(idx)}>
                                     <ListItemText primary={todoList.name} />
                                 </ListItemButton>
-                            </li>
+                            </ListItem>
                         ))
                     }
                 </List>

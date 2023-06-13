@@ -52,70 +52,70 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
             <TodoFormDialog controlRef={todoFormControlRef} />
             <TodoItemDetailView controlRef={todoDetailedViewControlRef} />
             <Grid container gap={2} position='relative' height='100%' overflow='auto'>
-                <Grid item xs={8} position='sticky'>
-                    <List
+                <List
+                    sx={{
+                        width: '100%',
+                    }}
+                    disablePadding
+                    subheader={<li />}>
+                    <ListSubheader
                         sx={{
-                            display: 'block',
                             width: '100%',
-                            gap: 2,
-                            '& ul': {
-                                padding: 0,
-                            },
+                            marginBottom: 1,
                         }}
-                        subheader={<li />}>
-                        <ListSubheader sx={{
-                            width: '100%',
-                        }}>
-                            <Card>
-                                <CompactCardContent cardContentProps={{ sx: { d: 'flex' } }}>
-                                    <Grid container alignItems='center'>
-                                        <Grid item xs component='h3' paddingLeft='0.5rem'>
-                                            {props.todoList.name}
-                                        </Grid>
-                                        <Grid item xs='auto'>
-                                            <Stack direction='row' gap={1}>
-                                                <IconButton
-                                                    title='Delete TODO List'
-                                                    onClick={() => props.deleteGroup(props.listIndex)}>
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                                <IconButton
-                                                    title='Add TODO Item'
-                                                    onClick={() => props.addTodo([props.listIndex, new ParentTodoInfo('TODO')])}>
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </Stack>
-                                        </Grid>
+                        disableGutters>
+                        <Card>
+                            <CompactCardContent cardContentProps={{ sx: { d: 'flex' } }}>
+                                <Grid container alignItems='center'>
+                                    <Grid item xs component='h3' paddingLeft='0.5rem'>
+                                        {props.todoList.name}
                                     </Grid>
-                                </CompactCardContent>
-                            </Card>
-                        </ListSubheader>
-                        {props.todoList.todos.map(
-                            (todoInfo, idx) => (
-                                <ListItem key={idx} sx={{
+                                    <Grid item xs='auto'>
+                                        <Stack direction='row' gap={1}>
+                                            <IconButton
+                                                title='Delete TODO List'
+                                                onClick={() => props.deleteGroup(props.listIndex)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                            <IconButton
+                                                title='Add TODO Item'
+                                                onClick={() => props.addTodo([props.listIndex, new ParentTodoInfo('TODO')])}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Stack>
+                                    </Grid>
+                                </Grid>
+                            </CompactCardContent>
+                        </Card>
+                    </ListSubheader>
+                    {props.todoList.todos.map(
+                        (todoInfo, idx) => (
+                            <ListItem
+                                key={idx}
+                                sx={{
                                     width: '100%',
                                     display: 'block',
-                                }}>
-                                    <TodoItemView
-                                        todoInfo={todoInfo}
-                                        onDetailedViewBtnClick={() => todoDetailedViewPrompt(todoInfo)}
-                                        onEditBtnClick={async () => {
-                                            const promptResult = await todoFormPrompt(todoInfo)
+                                    paddingY: 1,
+                                }}
+                                disableGutters>
+                                <TodoItemView
+                                    todoInfo={todoInfo}
+                                    onDetailedViewBtnClick={() => todoDetailedViewPrompt(todoInfo)}
+                                    onEditBtnClick={async () => {
+                                        const promptResult = await todoFormPrompt(todoInfo)
 
-                                            if (promptResult.status !== PromptResultStatus.RESOLVED) {
-                                                return
-                                            }
+                                        if (promptResult.status !== PromptResultStatus.RESOLVED) {
+                                            return
+                                        }
 
-                                            props.updateTodo([props.listIndex, idx, promptResult.value!])
-                                        }}
-                                        onDeleteBtnClick={() => props.deleteTodo([props.listIndex, idx])}
-                                    />
-                                </ListItem>
-                            )
-                        )}
-                    </List>
-                </Grid>
-                <Grid item xs></Grid>
+                                        props.updateTodo([props.listIndex, idx, promptResult.value!])
+                                    }}
+                                    onDeleteBtnClick={() => props.deleteTodo([props.listIndex, idx])}
+                                />
+                            </ListItem>
+                        )
+                    )}
+                </List>
             </Grid>
         </>
     )
@@ -156,6 +156,9 @@ function TodoItemView({
                 <Grid container flexWrap='nowrap'>
                     <Grid item xs flexShrink={1}>
                         <FormControlLabel
+                            sx={{
+                                width: '100%',
+                            }}
                             control={<Checkbox />}
                             label={todoInfo.title}
                             slotProps={{
