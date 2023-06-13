@@ -75,10 +75,12 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                         <Grid item xs='auto'>
                                             <Stack direction='row' gap={1}>
                                                 <IconButton
+                                                    title='Delete TODO List'
                                                     onClick={() => props.deleteGroup(props.listIndex)}>
                                                     <DeleteIcon />
                                                 </IconButton>
                                                 <IconButton
+                                                    title='Add TODO Item'
                                                     onClick={() => props.addTodo([props.listIndex, new ParentTodoInfo('TODO')])}>
                                                     <AddIcon />
                                                 </IconButton>
@@ -177,14 +179,14 @@ function TodoItemView({
                             <Box sx={{
                                 display: todoInfo.description ? 'initial' : 'none',
                             }}>
-                                <IconButton title='Details' onClick={onDetailedViewBtnClick}>
+                                <IconButton title='TODO Item Details' onClick={onDetailedViewBtnClick}>
                                     <InfoIcon />
                                 </IconButton>
                             </Box>
-                            <IconButton title='Edit' onClick={onEditBtnClick}>
+                            <IconButton title='Edit TODO Item' onClick={onEditBtnClick}>
                                 <EditIcon />
                             </IconButton>
-                            <IconButton title='Delete' onClick={onDeleteBtnClick}>
+                            <IconButton title='Delete TODO Item' onClick={onDeleteBtnClick}>
                                 <DeleteIcon />
                             </IconButton>
                         </Stack>

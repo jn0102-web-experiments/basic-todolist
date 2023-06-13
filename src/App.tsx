@@ -82,7 +82,7 @@ const App = themingConnector((props: ConnectedProps<typeof themingConnector>) =>
                   },
                 }}>
                 <Grid item xs>
-                  <Typography variant='h5' fontWeight={800} paddingLeft={2}>TODOs...</Typography>
+                  <Typography variant='h5' fontWeight={800} paddingLeft={2}>// TODOs</Typography>
                 </Grid>
                 <Grid item xs='auto'>
                   <IconButton onClick={() => {
