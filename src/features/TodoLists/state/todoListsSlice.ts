@@ -40,10 +40,9 @@ export class TodoList {
 }
 
 const initialState: TodoList[] = [
-    new TodoList('Default List', 'Default List Description', [
+    new TodoList('TODO List', 'Default List Description', [
         new ParentTodoInfo('Sample', 'Sample Description'),
     ]),
-    new TodoList('Default List 2', 'Default List Description', []),
 ]
 
 const todoListsSlice = createSlice({
