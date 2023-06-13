@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(
   {
-    key: 'one-todo-app-test',
+    key: 'basic-todolist-app-test',
     storage,
   },
   rootReducer
