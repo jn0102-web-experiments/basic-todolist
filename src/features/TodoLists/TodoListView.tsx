@@ -45,10 +45,12 @@ interface TodoListViewProps extends ConnectedProps<typeof todoListConnector> {
 const TodoListView = todoListConnector((props: TodoListViewProps) => {
 
     const todoFormControlRef = useRef<TodoFormDialogControl | null>(null)
+    const todoListRenameDialogControlRef = useRef<TodoListRenameDialogControl | null>(null)
     const todoDetailedViewControlRef = useRef<TodoItemDetailViewDialogControl | null>(null)
 
     return (
         <>
+            <TodoListRenameDialog controlRef={todoListRenameDialogControlRef} />
             <TodoFormDialog controlRef={todoFormControlRef} />
             <TodoItemDetailView controlRef={todoDetailedViewControlRef} />
             <Grid container gap={2} position='relative' height='100%' overflow='auto'>
@@ -72,6 +74,19 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                     </Grid>
                                     <Grid item xs='auto'>
                                         <Stack direction='row' gap={1}>
+                                            <IconButton
+                                                title='Rename TODO List'
+                                                onClick={async () => {
+                                                    const result = await todoListRenamePrompt(props.todoList.name)
+
+                                                    if (result.status === PromptResultStatus.CANCELLED) {
+                                                        return
+                                                    }
+
+                                                    props.renameGroup([props.listIndex, result.value])
+                                                }}>
+                                                <EditIcon />
+                                            </IconButton>
                                             <IconButton
                                                 title='Delete TODO List'
                                                 onClick={() => props.deleteGroup(props.listIndex)}>
@@ -100,6 +115,11 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                 disableGutters>
                                 <TodoItemView
                                     todoInfo={todoInfo}
+                                    onCheckToggled={() => {
+                                        const updated = { ...todoInfo }
+                                        updated.isDone = !updated.isDone
+                                        props.updateTodo([props.listIndex, idx, updated])
+                                    }}
                                     onDetailedViewBtnClick={() => todoDetailedViewPrompt(todoInfo)}
                                     onEditBtnClick={async () => {
                                         const promptResult = await todoFormPrompt(todoInfo)
@@ -120,6 +140,10 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
         </>
     )
 
+    function todoListRenamePrompt(currentName: string) {
+        return todoListRenameDialogControlRef.current!.prompt(currentName)
+    }
+
     function todoFormPrompt(todoInfo: TodoInfo) {
         return todoFormControlRef.current!.prompt(todoInfo)
     }
@@ -131,6 +155,7 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
 
 interface TodoItemViewProps {
     todoInfo: ParentTodoInfo
+    onCheckToggled?(): void
     onDetailedViewBtnClick?(): void
     onEditBtnClick?(): void
     onDeleteBtnClick?(): void
@@ -138,6 +163,7 @@ interface TodoItemViewProps {
 
 function TodoItemView({
     todoInfo,
+    onCheckToggled,
     onDetailedViewBtnClick,
     onEditBtnClick,
     onDeleteBtnClick,
@@ -159,7 +185,7 @@ function TodoItemView({
                             sx={{
                                 width: '100%',
                             }}
-                            control={<Checkbox />}
+                            control={<Checkbox checked={todoInfo.isDone} onChange={onCheckToggled} />}
                             label={todoInfo.title}
                             slotProps={{
                                 typography: {
@@ -269,6 +295,8 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
     const [todoTitle, setTodoTitle] = useState('')
     const [todoDescription, setTodoDescription] = useState<string | undefined>('')
 
+    const isTitleUnset = !todoTitle?.trim()
+
     const stateObj = {
         title: todoTitle,
         description: todoDescription,
@@ -314,8 +342,11 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
                 <Stack direction='column' gap={2} marginTop={1}>
                     <TextField
                         label='TODO Title'
+                        required
                         value={todoTitle}
                         onChange={evt => setTodoTitle(evt.target.value)}
+                        error={isTitleUnset}
+                        helperText={isTitleUnset ? 'Required' : null}
                     />
                     <TextField
                         multiline
@@ -329,10 +360,86 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
             </DialogContent>
             <DialogActions>
                 <Button onClick={cancelPrompt}>DISCARD</Button>
-                <Button onClick={resolvePrompt}>APPLY</Button>
+                <Button disabled={isTitleUnset} onClick={resolvePrompt}>APPLY</Button>
             </DialogActions>
         </Dialog>
     )
+}
+
+interface TodoListRenameDialogControl {
+    prompt(currentName: string): Promise<ResolvedPromptResult<string> | CancelledPromptResult>
+}
+
+interface TodoListRenameDialogProps {
+    controlRef: React.MutableRefObject<TodoListRenameDialogControl | null>
+}
+
+function TodoListRenameDialog({ controlRef }: TodoListRenameDialogProps) {
+
+    const [name, setName] = useState('')
+
+    const isNameUnset = !name?.trim()
+
+    const stateObj = {
+        name,
+    }
+    const stateRef = useRef(stateObj)
+    stateRef.current = stateObj
+
+    const [
+        isPromptActive,
+        activatePrompt,
+        resolvePrompt,
+        cancelPrompt,
+    ] = usePrompt(() => {
+        return stateRef.current.name
+    })
+
+    const control = useMemo<TodoListRenameDialogControl>(() => ({
+        prompt(name) {
+            setName(name)
+
+            return activatePrompt()
+        },
+    }), [])
+
+    useEffect(() => {
+        controlRef.current = control
+    }, [])
+
+    useEffect(() => {
+        if (isPromptActive) {
+            return
+        }
+
+        setName('')
+    }, [isPromptActive])
+
+    return (
+        <Dialog open={isPromptActive} maxWidth='sm' fullWidth>
+            <DialogTitle>Rename TODO List</DialogTitle>
+            <DialogContent>
+                <Stack direction='column' gap={2} marginTop={1}>
+                    <TextField
+                        label='TODO List Name'
+                        required
+                        value={name}
+                        onChange={evt => setName(evt.target.value)}
+                        error={isNameUnset}
+                        helperText={isNameUnset ? 'Required' : null}
+                    />
+                </Stack>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={cancelPrompt}>DISCARD</Button>
+                <Button disabled={isNameUnset} onClick={applyBtnClicked}>APPLY</Button>
+            </DialogActions>
+        </Dialog>
+    )
+
+    function applyBtnClicked() {
+        resolvePrompt()
+    }
 }
 
 export default TodoListView

@@ -53,6 +53,11 @@ const todoListsSlice = createSlice({
             const [name, description] = action.payload
             state.push(new TodoList(name, description))
         },
+        renameGroup(state, action: PayloadAction<[number, string]>) {
+            const [groupIndex, name] = action.payload
+            state[groupIndex].name = name
+            state.splice(groupIndex, 1, { ...state[groupIndex] })
+        },
         deleteGroup(state, action: PayloadAction<number>) {
             state.splice(action.payload, 1)
         },
@@ -68,6 +73,7 @@ const todoListsSlice = createSlice({
         },
         updateTodo(state, action: PayloadAction<[number, number, TodoInfo]>) {
             const [groupIndex, todoIndex, todoInfo] = action.payload
+            state[groupIndex].todos[todoIndex].isDone = todoInfo.isDone
             state[groupIndex].todos[todoIndex].title = todoInfo.title
             state[groupIndex].todos[todoIndex].description = todoInfo.description
 

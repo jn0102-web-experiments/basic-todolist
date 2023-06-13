@@ -52,7 +52,7 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
                         <Grid item xs>TODO Lists</Grid>
                         <Grid item xs='auto'>
                             <IconButton title='Add TODO List' onClick={() => {
-                                props.addGroup(['TODO List'])
+                                props.addGroup([`TODO List #${props.todoLists.length + 1}`])
                                 setSelectedTodoListIndex(props.todoLists.length)
                             }}>
                                 <AddIcon />
