@@ -63,13 +63,15 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                     <ListSubheader
                         sx={{
                             width: '100%',
+                            whiteSpace: 'nowrap',
                             marginBottom: 1,
                         }}
                         disableGutters>
-                        <Card>
-                            <CompactCardContent cardContentProps={{ sx: { d: 'flex' } }}>
+                        <Card sx={{ border: 'thin solid #3335', }}>
+                            <CompactCardContent
+                                cardContentProps={{ sx: { d: 'flex' } }}>
                                 <Grid container alignItems='center'>
-                                    <Grid item xs component='h3' paddingLeft='0.5rem'>
+                                    <Grid item xs component='h3' width={0} overflow='hidden' textOverflow='ellipsis' paddingLeft='0.5rem'>
                                         {props.todoList.name}
                                     </Grid>
                                     <Grid item xs='auto'>
@@ -110,7 +112,9 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                 sx={{
                                     width: '100%',
                                     display: 'block',
-                                    paddingY: 1,
+                                    padding: 0,
+                                    marginY: 2,
+                                    overflow: 'hidden',
                                 }}
                                 disableGutters>
                                 <TodoItemView
@@ -177,23 +181,29 @@ function TodoItemView({
     stateRef.current = stateObj
 
     return (
-        <Card>
+        <Card sx={{
+            border: 'thin solid #3335',
+        }}>
             <CompactCardContent>
                 <Grid container flexWrap='nowrap'>
-                    <Grid item xs flexShrink={1}>
+                    <Grid item xs flexShrink={1} sx={{
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        width: 0,
+
+                    }}>
                         <FormControlLabel
+                            control={<Checkbox checked={todoInfo.isDone} onChange={onCheckToggled} />}
+                            label={todoInfo.title}
                             sx={{
                                 width: '100%',
                             }}
-                            control={<Checkbox checked={todoInfo.isDone} onChange={onCheckToggled} />}
-                            label={todoInfo.title}
                             slotProps={{
                                 typography: {
                                     fontWeight: 'bold',
-                                    width: '100%',
+                                    display: 'block',
                                     overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap',
+                                    textOverflow: 'ellipsis',                                    
                                 },
                             }}
                         />
@@ -321,10 +331,11 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
         <Dialog open={isPromptActive} maxWidth='lg' fullWidth>
             <DialogTitle>TODO Info</DialogTitle>
             <DialogContent>
-                <Stack direction='column' gap={2} marginTop={1}>
+                <Stack direction='column' gap={1} marginTop={1}>
                     <TextField
-                        label='TODO Title'
                         required
+                        variant='filled'
+                        label='TODO Title'
                         value={todoTitle}
                         onChange={evt => setTodoTitle(evt.target.value)}
                         error={isTitleUnset}
@@ -332,6 +343,7 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
                     />
                     <TextField
                         multiline
+                        variant='filled'
                         minRows={3}
                         maxRows={10}
                         label='TODO Description'
@@ -397,6 +409,7 @@ function TodoListRenameDialog({ controlRef }: TodoListRenameDialogProps) {
                     <TextField
                         label='TODO List Name'
                         required
+                        variant='filled'
                         value={name}
                         onChange={evt => setName(evt.target.value)}
                         error={isNameUnset}

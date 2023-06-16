@@ -73,6 +73,7 @@ const App = themingConnector((props: ConnectedProps<typeof themingConnector>) =>
           }}>
             <Card sx={{
               flexShrink: 0,
+              border: 'thin solid #3335',
             }}>
               <CompactCardContent
                 cardContentProps={{

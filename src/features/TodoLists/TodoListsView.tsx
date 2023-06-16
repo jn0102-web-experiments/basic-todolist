@@ -44,7 +44,7 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
             }}
             height='100%'
             paddingBottom={1}>
-            <Grid item component={Card} xs={2} md={3} overflow='auto' height='100%'>
+            <Grid item component={Card} xs={5} md={3} sx={{ overflowY: 'auto' }} height='100%' border='thin solid #3335'>
                 <List
                     disablePadding
                     subheader={<li />}>
@@ -63,7 +63,14 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
                         props.todoLists.map((todoList, idx) => (
                             <ListItem key={idx} disablePadding>
                                 <ListItemButton selected={idx === selectedTodoListIndex} onClick={() => setSelectedTodoListIndex(idx)}>
-                                    <ListItemText primary={todoList.name} />
+                                    <ListItemText
+                                        primaryTypographyProps={{
+                                            overflow: 'hidden',
+                                            whiteSpace: 'nowrap',
+                                            textOverflow: 'ellipsis',
+                                        }}
+                                        primary={todoList.name}
+                                    />
                                 </ListItemButton>
                             </ListItem>
                         ))
