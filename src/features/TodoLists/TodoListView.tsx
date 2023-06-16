@@ -258,15 +258,6 @@ function TodoItemDetailView({ controlRef }: TodoItemDetailViewProps) {
         controlRef.current = control
     }, [])
 
-    useEffect(() => {
-        if (isPromptActive) {
-            return
-        }
-
-        setTodoTitle('')
-        setTodoDescription('')
-    }, [isPromptActive])
-
     return (
         <Dialog open={isPromptActive} maxWidth='lg' fullWidth>
             <DialogTitle>{todoTitle}</DialogTitle>
@@ -325,15 +316,6 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
     useEffect(() => {
         controlRef.current = control
     }, [])
-
-    useEffect(() => {
-        if (isPromptActive) {
-            return
-        }
-
-        setTodoTitle('')
-        setTodoDescription('')
-    }, [isPromptActive])
 
     return (
         <Dialog open={isPromptActive} maxWidth='lg' fullWidth>
@@ -406,14 +388,6 @@ function TodoListRenameDialog({ controlRef }: TodoListRenameDialogProps) {
     useEffect(() => {
         controlRef.current = control
     }, [])
-
-    useEffect(() => {
-        if (isPromptActive) {
-            return
-        }
-
-        setName('')
-    }, [isPromptActive])
 
     return (
         <Dialog open={isPromptActive} maxWidth='sm' fullWidth>
