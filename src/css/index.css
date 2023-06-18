@@ -6,10 +6,6 @@
         url(../assets/fonts/CascadiaMono.woff2);
 }
 
-.mdview {
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-}
-
 .mdview code {
     font-family: 'CascadiaMono' !important;
 }

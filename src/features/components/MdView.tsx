@@ -45,7 +45,6 @@ const MdView = themingConnector(({ children, theme }: MdViewProps) => {
                                 }
                             })(theme)}
                             language={match[1]}
-                            PreTag="div"
                         />
                     )
                 }
