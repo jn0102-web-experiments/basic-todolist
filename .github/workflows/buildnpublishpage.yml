@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        node-version: [18.x]
         pnpm-version: [8.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
@@ -18,12 +19,17 @@ jobs:
         with:
           ref: main
           path: app-build
-      - name: Use PNPM ${{ matrix.pnpm-version }}
+      - run: cd app-build
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - name: Use PNPM ${{ matrix.pnpm-version }}
+        uses: pnpm/action-setup@v2
         with:
           node-version: ${{ matrix.pnpm-version }}
           cache: "pnpm"
-      - run: cd app-build
       - run: pnpm ci
       - run: pnpm run build --if-present
       - run: cd ..
