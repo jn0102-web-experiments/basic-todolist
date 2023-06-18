@@ -1,0 +1,48 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of nod
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+name: Update Github Pages Project Site
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # node-version: [18.x]
+        pnpm-version: [8.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+          path: app-build
+      # - name: Use Node.js ${{ matrix.node-version }}
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: ${{ matrix.node-version }}
+      #     cache: "npm"
+      - name: Use PNPM ${{ matrix.pnpm-version }}
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ matrix.pnpm-version }}
+          cache: "pnpm"
+      - run: |
+          cd app-build
+          pnpm install
+          pnpm run build
+      - uses: actions/checkout@v3
+        with:
+          ref: github-page
+          path: app-page
+          token: ${{ secrets.GHPAGES_PUSH_PAT }}
+      - run: |
+          cp -r ./app-build/dist ./app-page
+          cd app-page
+          git config user.name "GitHub Actions"
+          git config user.email "<>"
+          git add .
+          git commit -m "update"
+          git push
