@@ -1,10 +1,12 @@
-import { Action, ThunkAction, combineReducers, configureStore } from "@reduxjs/toolkit"
+import { Action, MiddlewareArray, ThunkAction, combineReducers, configureStore } from "@reduxjs/toolkit"
 import logger from "redux-logger"
 import { persistReducer, persistStore } from "redux-persist"
 import storage from 'redux-persist/lib/storage'
 import { createStateSyncMiddleware, initMessageListener } from "redux-state-sync"
 import { todoListsSliceReducer } from "./features/TodoLists/state/todoListsSlice"
 import { themingSliceReducer } from "./state/themingSlice"
+
+const BUILD_MODE = import.meta.env.MODE as ('development' | 'production');
 
 const rootReducer = combineReducers({
   theme: themingSliceReducer,
@@ -21,12 +23,19 @@ const persistedReducer = persistReducer(
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: [
-    logger,
-    createStateSyncMiddleware({
+  middleware(_getDefaultMiddleWare) {
+    let middlewares = new MiddlewareArray<any>()
+
+    middlewares.push(createStateSyncMiddleware({
       blacklist: ['persist/PERSIST', 'persist/REHYDRATE'],
-    }),
-  ],
+    }))
+
+    if (BUILD_MODE === 'development') {
+      middlewares.push(logger)
+    }
+
+    return middlewares
+  },
 })
 
 initMessageListener(store)
