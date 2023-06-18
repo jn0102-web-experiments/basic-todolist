@@ -1,6 +1,15 @@
 
 @charset "UTF-8";
 
+@font-face {
+    font-family: 'CascadiaMono';
+    src: url(./assets/fonts/CascadiaMono.ttf) format('truetype');
+}
+
+.mdview code {
+    font-family: 'CascadiaMono' !important;
+}
+
 html, body {
     width: 100%;
     height: 100%;

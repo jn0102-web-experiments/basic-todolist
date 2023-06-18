@@ -17,38 +17,42 @@ interface MdViewProps extends ConnectedProps<typeof themingConnector> {
 }
 
 const MdView = themingConnector(({ children, theme }: MdViewProps) => {
-    return <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeRaw]}
-        components={{
-            code({ node, inline, className, children, ...props }) {
-                const match = /language-(\w+)/.exec(className || '')
+    return (
+        <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+            className='mdview'
+            components={{
+                code({ node, inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || '')
 
-                if (inline || !match) {
+                    if (inline || !match) {
+                        return (
+                            <code {...props} className={className}>
+                                {children}
+                            </code>
+                        )
+                    }
+
                     return (
-                        <code {...props} className={className}>
-                            {children}
-                        </code>
+                        <SyntaxHighlighter
+                            {...props}
+                            children={String(children).replace(/\n$/, '')}
+                            style={((theme) => {
+                                switch (theme) {
+                                    case "light": return vs
+                                    default: return vscDarkPlus
+                                }
+                            })(theme)}
+                            language={match[1]}
+                            PreTag="div"
+                        />
                     )
                 }
-
-                return (
-                    <SyntaxHighlighter
-                        {...props}
-                        children={String(children).replace(/\n$/, '')}
-                        style={((theme) => {
-                            switch (theme) {
-                                case "light": return vs
-                                default: return vscDarkPlus
-                            }
-                        })(theme)}
-                        language={match[1]}
-                        PreTag="div" />
-                )
-            }
-        }}>
-        {children ?? ''}
-    </ReactMarkdown>
+            }}>
+            {children ?? ''}
+        </ReactMarkdown>
+    )
 })
 
 export default MdView
