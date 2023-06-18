@@ -1,6 +1,6 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of nod
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-name: Node.js CI
+name: Update Github Pages Project Site
 on:
   push:
     branches: ["main"]
@@ -23,9 +23,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+      - run: npm ci -g pnpm@^8
       - run: cd app-build
-      - run: npm ci
-      - run: npm run build --if-present
+      - run: pnpm ci
+      - run: pnpm run build --if-present
       - run: cd ..
       - uses: actions/checkout@v3
         with:
