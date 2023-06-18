@@ -44,9 +44,22 @@ interface TodoListViewProps extends ConnectedProps<typeof todoListConnector> {
 
 const TodoListView = todoListConnector((props: TodoListViewProps) => {
 
+    const [shouldScrollToLastTodoItemView, toggleShouldScrollToLastTodoItemView] = useState(false)
+
     const todoFormControlRef = useRef<TodoFormDialogControl | null>(null)
     const todoListRenameDialogControlRef = useRef<TodoListRenameDialogControl | null>(null)
     const todoDetailedViewControlRef = useRef<TodoItemDetailViewDialogControl | null>(null)
+
+    const lastAddedTodoItemViewRef = useRef<HTMLElement | null>(null)
+
+    useEffect(() => {
+        if (!shouldScrollToLastTodoItemView) {
+            return
+        }
+
+        lastAddedTodoItemViewRef.current?.scrollIntoView({ behavior: 'smooth' })
+        toggleShouldScrollToLastTodoItemView(false)
+    }, [shouldScrollToLastTodoItemView])
 
     return (
         <>
@@ -90,13 +103,11 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                                 <EditIcon />
                                             </IconButton>
                                             <IconButton
-                                                title='Delete TODO List'
-                                                onClick={() => props.deleteGroup(props.listIndex)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                            <IconButton
                                                 title='Add TODO Item'
-                                                onClick={() => props.addTodo([props.listIndex, new ParentTodoInfo('TODO')])}>
+                                                onClick={() => {
+                                                    props.addTodo([props.listIndex, new ParentTodoInfo(`TODO #${props.todoList.todos.length + 1}`)])
+                                                    toggleShouldScrollToLastTodoItemView(true)
+                                                }}>
                                                 <AddIcon />
                                             </IconButton>
                                         </Stack>
@@ -118,6 +129,13 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                 }}
                                 disableGutters>
                                 <TodoItemView
+                                    containerElRef={htmlEl => {
+                                        if (props.todoList.todos.length - 1 !== idx) {
+                                            return
+                                        }
+
+                                        lastAddedTodoItemViewRef.current = htmlEl
+                                    }}
                                     todoInfo={todoInfo}
                                     onCheckToggled={() => {
                                         const updated = { ...todoInfo }
@@ -158,6 +176,7 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
 })
 
 interface TodoItemViewProps {
+    containerElRef: ((instance: HTMLDivElement | null) => void) | React.RefObject<HTMLDivElement> | null
     todoInfo: ParentTodoInfo
     onCheckToggled?(): void
     onDetailedViewBtnClick?(): void
@@ -166,6 +185,7 @@ interface TodoItemViewProps {
 }
 
 function TodoItemView({
+    containerElRef: ref,
     todoInfo,
     onCheckToggled,
     onDetailedViewBtnClick,
@@ -181,9 +201,11 @@ function TodoItemView({
     stateRef.current = stateObj
 
     return (
-        <Card sx={{
-            border: 'thin solid #3335',
-        }}>
+        <Card
+            ref={ref}
+            sx={{
+                border: 'thin solid #3335',
+            }}>
             <CompactCardContent>
                 <Grid container flexWrap='nowrap'>
                     <Grid item xs flexShrink={1} sx={{
@@ -203,7 +225,7 @@ function TodoItemView({
                                     fontWeight: 'bold',
                                     display: 'block',
                                     overflow: 'hidden',
-                                    textOverflow: 'ellipsis',                                    
+                                    textOverflow: 'ellipsis',
                                 },
                             }}
                         />
@@ -225,7 +247,10 @@ function TodoItemView({
                             <IconButton title='Edit TODO Item' onClick={onEditBtnClick}>
                                 <EditIcon />
                             </IconButton>
-                            <IconButton title='Delete TODO Item' onClick={onDeleteBtnClick}>
+                            <IconButton
+                                title='Delete TODO Item'
+                                color={'error'}
+                                onClick={onDeleteBtnClick}>
                                 <DeleteIcon />
                             </IconButton>
                         </Stack>
@@ -270,7 +295,7 @@ function TodoItemDetailView({ controlRef }: TodoItemDetailViewProps) {
 
     return (
         <Dialog open={isPromptActive} maxWidth='lg' fullWidth>
-            <DialogTitle>{todoTitle}</DialogTitle>
+            <DialogTitle sx={{ overflowX: 'hidden' }} textOverflow='ellipsis'>{todoTitle}</DialogTitle>
             <DialogContent>
                 <MdView>
                     {todoDescription}
