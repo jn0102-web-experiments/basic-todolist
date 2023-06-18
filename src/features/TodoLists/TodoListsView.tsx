@@ -1,5 +1,6 @@
 import AddIcon from "@mui/icons-material/Add"
 import DeleteIcon from "@mui/icons-material/Delete"
+import DataArrayIcon from "@mui/icons-material/DataArray"
 import {
     Card,
     CardContent,
@@ -170,7 +171,10 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
 
                                     selectedTodoListOptionRef.current = htmlEl
                                 }} className='list-todolists' key={idx} disablePadding>
-                                    <ListItemButton selected={idx === selectedTodoListIndex} onClick={() => setSelectedTodoListIndex(idx)}>
+                                    <ListItemButton
+                                        title={todoList.name}
+                                        selected={idx === selectedTodoListIndex}
+                                        onClick={() => setSelectedTodoListIndex(idx)}>
                                         <ListItemText
                                             primaryTypographyProps={{
                                                 overflow: 'hidden',
@@ -203,8 +207,21 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
                                     todoList={selectedTodoList}
                                 />
                             ) : (
-                                <Card>
-                                    <CardContent>NO TODO LIST SELECTED</CardContent>
+                                <Card sx={{
+                                    height: '100%',
+                                    border: 'thin solid #3335',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '200%',
+                                    opacity: 0.3,
+                                }}>
+                                    <CardContent sx={{ textAlign: 'center', }}>
+                                        <Stack justifyContent='center' alignItems='center'>
+                                            <DataArrayIcon sx={{ fontSize: '60pt', }} />
+                                            <div>NO TODO LISTS YET</div>
+                                        </Stack>
+                                    </CardContent>
                                 </Card>
                             )
                     }

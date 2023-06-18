@@ -2,10 +2,12 @@ import AddIcon from "@mui/icons-material/Add"
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"
 import InfoIcon from "@mui/icons-material/Info"
+import DataArrayIcon from "@mui/icons-material/DataArray"
 import {
     Box,
     Button,
     Card,
+    CardContent,
     Checkbox,
     Dialog,
     DialogActions,
@@ -18,7 +20,8 @@ import {
     ListItem,
     ListSubheader,
     Stack,
-    TextField
+    TextField,
+    Typography
 } from "@mui/material"
 import { bindActionCreators } from "@reduxjs/toolkit"
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -70,6 +73,8 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                 <List
                     sx={{
                         width: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
                     disablePadding
                     subheader={<li />}>
@@ -84,7 +89,15 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                             <CompactCardContent
                                 cardContentProps={{ sx: { d: 'flex' } }}>
                                 <Grid container alignItems='center'>
-                                    <Grid item xs component='h3' width={0} overflow='hidden' textOverflow='ellipsis' paddingLeft='0.5rem'>
+                                    <Grid
+                                        item
+                                        xs
+                                        component='h3'
+                                        width={0}
+                                        title={props.todoList.name}
+                                        overflow='hidden'
+                                        textOverflow='ellipsis'
+                                        paddingLeft='0.5rem'>
                                         {props.todoList.name}
                                     </Grid>
                                     <Grid item xs='auto'>
@@ -124,7 +137,7 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                     width: '100%',
                                     display: 'block',
                                     padding: 0,
-                                    marginY: 2,
+                                    marginY: 1,
                                     overflow: 'hidden',
                                 }}
                                 disableGutters>
@@ -157,6 +170,29 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                             </ListItem>
                         )
                     )}
+                    <ListItem disableGutters disablePadding sx={{
+                        marginTop: 1,
+                        flexGrow: 1,
+                        height: 0,
+                        opacity: props.todoList.todos.length < 1 ? 0.3 : 0,
+                    }}>
+                        <Card sx={{ flexGrow: 1, height: '100%', }}>
+                            <CardContent sx={{
+                                textAlign: 'center',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '200%',
+                                width: '100%',
+                                height: '100%',
+                            }}>
+                                <Stack justifyContent='center' alignItems='center'>
+                                    <DataArrayIcon sx={{ fontSize: '60pt', }} />
+                                    <div>NO TODO ITEMS YET</div>
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </ListItem>
                 </List>
             </Grid>
         </>
@@ -217,11 +253,17 @@ function TodoItemView({
                         <FormControlLabel
                             control={<Checkbox checked={todoInfo.isDone} onChange={onCheckToggled} />}
                             label={todoInfo.title}
+                            title={todoInfo.title}
                             sx={{
                                 width: '100%',
+                                paddingLeft: 1.5,
+                                textDecoration: todoInfo.isDone ? 'line-through' : null,
                             }}
                             slotProps={{
                                 typography: {
+                                    sx: {
+                                        opacity: todoInfo.isDone ? 0.5 : 1,
+                                    },
                                     fontWeight: 'bold',
                                     display: 'block',
                                     overflow: 'hidden',
@@ -375,6 +417,7 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
                         value={todoDescription}
                         onChange={evt => setTodoDescription(evt.target.value)}
                     />
+                    <Typography variant='subtitle2' fontStyle='oblique' sx={{ opacity: 0.7, }}>Description can be in Markdown format</Typography>
                 </Stack>
             </DialogContent>
             <DialogActions>
