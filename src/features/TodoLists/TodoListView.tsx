@@ -188,7 +188,7 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                             }}>
                                 <Stack justifyContent='center' alignItems='center'>
                                     <DataArrayIcon sx={{ fontSize: '60pt', }} />
-                                    <div>NO TODO ITEMS YET</div>
+                                    <Typography variant='h5'>NO TODO ITEMS YET</Typography>
                                 </Stack>
                             </CardContent>
                         </Card>

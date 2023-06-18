@@ -15,6 +15,7 @@ import {
     MenuItem,
     Select,
     Stack,
+    Typography,
 } from "@mui/material"
 import { bindActionCreators } from "@reduxjs/toolkit"
 import { useEffect, useRef, useState } from "react"
@@ -219,7 +220,7 @@ const TodoListsView = todoListsConnector((props: ConnectedProps<typeof todoLists
                                     <CardContent sx={{ textAlign: 'center', }}>
                                         <Stack justifyContent='center' alignItems='center'>
                                             <DataArrayIcon sx={{ fontSize: '60pt', }} />
-                                            <div>NO TODO LISTS YET</div>
+                                            <Typography variant='h5'>NO TODO LISTS YET</Typography>
                                         </Stack>
                                     </CardContent>
                                 </Card>
