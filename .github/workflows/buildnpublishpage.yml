@@ -39,7 +39,10 @@ jobs:
           path: app-page
           token: ${{ secrets.GHPAGES_PUSH_PAT }}
       - run: |
-          cp -r ./app-build/dist ./app-page
+          mkdir tmp
+          mv ./app-page/* tmp
+          rm -rf tmp
+          cp -r ./app-build/dist/* ./app-page
           cd app-page
           git config user.name "GitHub Actions"
           git config user.email "<>"
