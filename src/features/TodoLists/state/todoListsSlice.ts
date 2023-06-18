@@ -19,12 +19,6 @@ export class ParentTodoInfo extends TodoInfo {
         super(title, description)
         this.subTodos = []
     }
-
-    clone() {
-        const clone = new ParentTodoInfo(this.title, this.description)
-        clone.subTodos = this.subTodos
-        return clone
-    }
 }
 
 export class TodoList {
@@ -39,11 +33,7 @@ export class TodoList {
     }
 }
 
-const initialState: TodoList[] = [
-    new TodoList('TODO List', 'Default List Description', [
-        new ParentTodoInfo('Sample', 'Sample Description'),
-    ]),
-]
+const initialState: TodoList[] = []
 
 const todoListsSlice = createSlice({
     name: 'todoLists',
