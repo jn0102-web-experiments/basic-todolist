@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
+        # node-version: [18.x]
         pnpm-version: [8.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
@@ -19,25 +19,30 @@ jobs:
         with:
           ref: main
           path: app-build
-      - run: cd app-build
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
+      # - name: Use Node.js ${{ matrix.node-version }}
+      #   uses: actions/setup-node@v3
+      #   with:
+      #     node-version: ${{ matrix.node-version }}
+      #     cache: "npm"
       - name: Use PNPM ${{ matrix.pnpm-version }}
         uses: pnpm/action-setup@v2
         with:
-          node-version: ${{ matrix.pnpm-version }}
+          version: ${{ matrix.pnpm-version }}
           cache: "pnpm"
-      - run: pnpm ci
-      - run: pnpm run build --if-present
-      - run: cd ..
+      - run: |
+          cd app-build
+          pnpm install
+          pnpm run build
       - uses: actions/checkout@v3
         with:
           ref: github-page
           path: app-page
-      - run: cp ./app-build/dist ./app-page
-      - run: git add .
-      - run: git commit -m "update"
-      - run: git push
+          token: ${{ secrets.GHPAGES_PUSH_PAT }}
+      - run: |
+          cp -r ./app-build/dist ./app-page
+          cd app-page
+          git config user.name "GitHub Actions"
+          git config user.email "<>"
+          git add .
+          git commit -m "update"
+          git push
