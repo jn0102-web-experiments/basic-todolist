@@ -1,11 +1,19 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 export class TodoInfo {
+    /**
+     * see `DATE_TIME_FMT` in [constants.ts](../../../constants.ts)
+     */
     date: string
     title: string
     description?: string
     isDone: boolean
 
+    /**
+     * @param title
+     * @param date see `DATE_TIME_FMT` in [constants.ts](../../../constants.ts)
+     * @param description
+     */
     constructor(title: string, date: string, description?: string) {
         this.title = title
         this.date = date
