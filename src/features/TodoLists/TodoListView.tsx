@@ -1,8 +1,8 @@
 import AddIcon from "@mui/icons-material/Add"
+import DataArrayIcon from "@mui/icons-material/DataArray"
 import DeleteIcon from "@mui/icons-material/Delete"
 import EditIcon from "@mui/icons-material/Edit"
 import InfoIcon from "@mui/icons-material/Info"
-import DataArrayIcon from "@mui/icons-material/DataArray"
 import {
     Box,
     Button,
@@ -23,9 +23,12 @@ import {
     TextField,
     Typography
 } from "@mui/material"
+import { DatePicker } from "@mui/x-date-pickers"
 import { bindActionCreators } from "@reduxjs/toolkit"
+import dayjs, { Dayjs } from "dayjs"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ConnectedProps, connect } from "react-redux"
+import { DATE_TIME_FMT } from "../../constants"
 import { AppDispatch } from "../../store"
 import MdView from "../components/MdView"
 import CompactCardContent from "./components/CompactCardContent"
@@ -118,7 +121,10 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                             <IconButton
                                                 title='Add TODO Item'
                                                 onClick={() => {
-                                                    props.addTodo([props.listIndex, new ParentTodoInfo(`TODO #${props.todoList.todos.length + 1}`)])
+                                                    props.addTodo([
+                                                        props.listIndex,
+                                                        new ParentTodoInfo(`TODO #${props.todoList.todos.length + 1}`, dayjs().format(DATE_TIME_FMT))
+                                                    ])
                                                     toggleShouldScrollToLastTodoItemView(true)
                                                 }}>
                                                 <AddIcon />
@@ -159,11 +165,12 @@ const TodoListView = todoListConnector((props: TodoListViewProps) => {
                                     onEditBtnClick={async () => {
                                         const promptResult = await todoFormPrompt(todoInfo)
 
+                                        console.log('@test-result:', promptResult)
                                         if (promptResult.status !== PromptResultStatus.RESOLVED) {
                                             return
                                         }
 
-                                        props.updateTodo([props.listIndex, idx, promptResult.value!])
+                                        props.updateTodo([props.listIndex, idx, promptResult.value])
                                     }}
                                     onDeleteBtnClick={() => props.deleteTodo([props.listIndex, idx])}
                                 />
@@ -252,7 +259,14 @@ function TodoItemView({
                     }}>
                         <FormControlLabel
                             control={<Checkbox checked={todoInfo.isDone} onChange={onCheckToggled} />}
-                            label={todoInfo.title}
+                            label={<>
+                                {todoInfo.title}
+                                <Typography variant='caption' sx={{
+                                    marginLeft: 2,
+                                }}>
+                                    {todoInfo.date}
+                                </Typography>
+                            </>}
                             title={todoInfo.title}
                             sx={{
                                 width: '100%',
@@ -271,6 +285,7 @@ function TodoItemView({
                                 },
                             }}
                         />
+
                     </Grid>
                     <Grid item xs='auto' flexShrink={0}>
                         <Stack
@@ -350,6 +365,34 @@ function TodoItemDetailView({ controlRef }: TodoItemDetailViewProps) {
     )
 }
 
+function CtmDatePicker({ sx, slotProps = {}, ...otherProps }: React.ComponentProps<typeof DatePicker>) {
+    const {
+        textField,
+        ...otherSlotProps
+    } = slotProps
+
+    return (
+        <>
+            <DatePicker
+                format={DATE_TIME_FMT}
+                slotProps={{
+                    textField: {
+                        variant: 'filled',
+                        ...textField,
+                    },
+                    ...otherSlotProps,
+                }}
+                sx={{
+                    width: '12rem',
+                    flexGrow: 0,
+                    ...sx,
+                }}
+                {...otherProps}
+            />
+        </>
+    )
+}
+
 interface TodoFormDialogControl {
     prompt(todoInfo: TodoInfo): Promise<ResolvedPromptResult<TodoInfo> | CancelledPromptResult>
 }
@@ -360,6 +403,7 @@ interface TodoFormDialogProps {
 
 function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
 
+    const [todoDate, setTodoDate] = useState<string>(dayjs().format(DATE_TIME_FMT))
     const [todoTitle, setTodoTitle] = useState('')
     const [todoDescription, setTodoDescription] = useState<string | undefined>('')
 
@@ -367,6 +411,7 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
 
     const stateObj = {
         title: todoTitle,
+        date: todoDate,
         description: todoDescription,
     }
     const stateRef = useRef(stateObj)
@@ -378,11 +423,13 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
         resolvePrompt,
         cancelPrompt,
     ] = usePrompt(() => {
-        return new TodoInfo(stateRef.current.title, stateRef.current.description)
+        return new TodoInfo(stateRef.current.title, stateRef.current.date, stateRef.current.description)
     })
 
     const control = useMemo<TodoFormDialogControl>(() => ({
         prompt(todoInfo) {
+            console.log('@test', todoInfo)
+            setTodoDate(todoInfo.date)
             setTodoTitle(todoInfo.title)
             setTodoDescription(todoInfo.description)
 
@@ -399,6 +446,15 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
             <DialogTitle>TODO Info</DialogTitle>
             <DialogContent>
                 <Stack direction='column' gap={1} marginTop={1}>
+                    <CtmDatePicker
+                        value={dayjs(todoDate, DATE_TIME_FMT)}
+                        onChange={value => setTodoDate((value as Dayjs).format(DATE_TIME_FMT))}
+                        slotProps={{
+                            textField: {
+                                label: 'Date',
+                            },
+                        }}
+                    />
                     <TextField
                         required
                         variant='filled'
@@ -417,7 +473,12 @@ function TodoFormDialog({ controlRef }: TodoFormDialogProps) {
                         value={todoDescription}
                         onChange={evt => setTodoDescription(evt.target.value)}
                     />
-                    <Typography variant='subtitle2' fontStyle='oblique' sx={{ opacity: 0.7, }}>Description can be in Markdown format</Typography>
+                    <Typography
+                        variant='subtitle2'
+                        fontStyle='oblique'
+                        sx={{ opacity: 0.7, }}>
+                        Description can be in Markdown format
+                    </Typography>
                 </Stack>
             </DialogContent>
             <DialogActions>

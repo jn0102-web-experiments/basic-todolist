@@ -15,6 +15,8 @@ import { ConnectedProps, connect } from 'react-redux'
 // import './css/App.css'
 import DarkModeIcon from "@mui/icons-material/DarkMode"
 import LightModeIcon from "@mui/icons-material/LightMode"
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { bindActionCreators } from '@reduxjs/toolkit'
 import { useRef } from 'react'
 import TodoListsView from './features/TodoLists/TodoListsView'
@@ -56,61 +58,63 @@ const App = themingConnector((props: ConnectedProps<typeof themingConnector>) =>
   stateRef.current = stateObj;
 
   return (
-    <ThemeProvider theme={activeTheme}>
-      <Box
-        bgcolor={activeTheme.palette.background.default}
-        sx={{
-          m: 0,
-          width: '100%',
-          height: '100vh',
-        }}>
-        <Container sx={{
-          height: '100vh',
-        }}>
-          <Stack gap={2} justifyContent='start' sx={{
-            height: '100%',
-            padding: '1rem',
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <ThemeProvider theme={activeTheme}>
+        <Box
+          bgcolor={activeTheme.palette.background.default}
+          sx={{
+            m: 0,
+            width: '100%',
+            height: '100vh',
           }}>
-            <Card sx={{
-              flexShrink: 0,
-              border: 'thin solid #3335',
+          <Container sx={{
+            height: '100vh',
+          }}>
+            <Stack gap={2} justifyContent='start' sx={{
+              height: '100%',
+              padding: '1rem',
             }}>
-              <CompactCardContent
-                cardContentProps={{
-                  sx: {
-                    display: 'flex',
-                    alignItems: 'center',
-                  },
-                }}>
-                <Grid item xs>
-                  <Typography variant='h5' fontWeight={800} paddingLeft={2}>// TODOs</Typography>
-                </Grid>
-                <Grid item xs='auto'>
-                  <IconButton onClick={() => {
-                    switch (props.theme) {
-                      case 'light':
-                        props.setTheme('dark')
-                        break
-                      default:
-                        props.setTheme('light')
-                        break
-                    }
+              <Card sx={{
+                flexShrink: 0,
+                border: 'thin solid #3335',
+              }}>
+                <CompactCardContent
+                  cardContentProps={{
+                    sx: {
+                      display: 'flex',
+                      alignItems: 'center',
+                    },
                   }}>
-                    {(theme => {
-                      switch (theme) {
-                        case 'dark': return <DarkModeIcon />
-                        default: return <LightModeIcon />
+                  <Grid item xs>
+                    <Typography variant='h5' fontWeight={800} paddingLeft={2}>// TODOs</Typography>
+                  </Grid>
+                  <Grid item xs='auto'>
+                    <IconButton onClick={() => {
+                      switch (props.theme) {
+                        case 'light':
+                          props.setTheme('dark')
+                          break
+                        default:
+                          props.setTheme('light')
+                          break
                       }
-                    })(props.theme)}
-                  </IconButton>
-                </Grid>
-              </CompactCardContent>
-            </Card>
-            <TodoListsView />
-          </Stack>
-        </Container>
-      </Box>
-    </ThemeProvider>
+                    }}>
+                      {(theme => {
+                        switch (theme) {
+                          case 'dark': return <DarkModeIcon />
+                          default: return <LightModeIcon />
+                        }
+                      })(props.theme)}
+                    </IconButton>
+                  </Grid>
+                </CompactCardContent>
+              </Card>
+              <TodoListsView />
+            </Stack>
+          </Container>
+        </Box>
+      </ThemeProvider>
+    </LocalizationProvider>
   )
 })
 

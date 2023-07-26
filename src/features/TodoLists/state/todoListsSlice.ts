@@ -1,12 +1,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit"
 
 export class TodoInfo {
+    date: string
     title: string
     description?: string
     isDone: boolean
 
-    constructor(title: string, description?: string) {
+    constructor(title: string, date: string, description?: string) {
         this.title = title
+        this.date = date
         this.description = description
         this.isDone = false
     }
@@ -15,8 +17,8 @@ export class TodoInfo {
 export class ParentTodoInfo extends TodoInfo {
     subTodos: TodoInfo[]
 
-    constructor(title: string, description?: string) {
-        super(title, description)
+    constructor(title: string, date: string, description?: string) {
+        super(title, date, description)
         this.subTodos = []
     }
 }
@@ -63,11 +65,14 @@ const todoListsSlice = createSlice({
         },
         updateTodo(state, action: PayloadAction<[number, number, TodoInfo]>) {
             const [groupIndex, todoIndex, todoInfo] = action.payload
-            state[groupIndex].todos[todoIndex].isDone = todoInfo.isDone
-            state[groupIndex].todos[todoIndex].title = todoInfo.title
-            state[groupIndex].todos[todoIndex].description = todoInfo.description
+            const updatableTodo = state[groupIndex].todos[todoIndex]
 
-            state[groupIndex].todos.splice(todoIndex, 1, state[groupIndex].todos[todoIndex])
+            updatableTodo.isDone = todoInfo.isDone
+            updatableTodo.title = todoInfo.title
+            updatableTodo.date = todoInfo.date
+            updatableTodo.description = todoInfo.description
+
+            state[groupIndex].todos.splice(todoIndex, 1, updatableTodo)
             state.splice(groupIndex, 1, { ...state[groupIndex] })
         },
         deleteTodo(state, action: PayloadAction<[number, number]>) {
