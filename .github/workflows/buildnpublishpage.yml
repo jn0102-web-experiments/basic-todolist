@@ -47,5 +47,5 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "<>"
           git add .
-          git commit -m "update"
+          git commit -m '${{ github.event.head_commit.message }}'
           git push
